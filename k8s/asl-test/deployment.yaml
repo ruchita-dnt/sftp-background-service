@@ -1,0 +1,91 @@
+# Service deployment yml file configuration
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sftp-background-deployment-test
+  namespace: test
+  labels:
+    app: ssftp-background-deployment-test
+spec:
+  replicas: 2 # number of pods
+  selector:
+    matchLabels:
+      app: sftp-background-deployment-test
+  template:
+    metadata:
+      labels:
+        app: sftp-background-deployment-test
+    spec:
+      containers:
+        - name: docker-image-1
+          image: gcr.io/clus-demo/docker-image:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+              protocol: TCP
+          env:
+            - name: CLIENT_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: sftp-service-secret-test
+                  key: CLIENT_EMAIL
+            - name: CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: sftp-service-secret-test
+                  key: CLIENT_ID
+            - name: PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: sftp-service-secret-test
+                  key: PRIVATE_KEY
+            - name: PROJECT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: sftp-service-secret-test
+                  key: PROJECT_ID
+            - name: TOKEN_URL
+              valueFrom:
+                secretKeyRef:
+                  name: sftp-service-secret-test
+                  key: TOKEN_URL
+            - name: allFileExtension
+              valueFrom:
+                secretKeyRef:
+                  name: sftp-service-secret-test
+                  key: allFileExtension
+            - name: apiURL
+              valueFrom:
+                secretKeyRef:
+                  name: sftp-service-secret-test
+                  key: apiURL
+            - name: bucketName
+              valueFrom:
+                secretKeyRef:
+                  name: sftp-service-secret-test
+                  key: bucketName
+            - name: destinationPath
+              valueFrom:
+                secretKeyRef:
+                  name: sftp-service-secret-test
+                  key: destinationPath
+            - name: ftpServerPath
+              valueFrom:
+                secretKeyRef:
+                  name: sftp-service-secret-test
+                  key: ftpServerPath
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sftp-background-service-test
+  namespace: test
+spec:
+  type: NodePort
+  selector:
+    app: sftp-background-deployment-test
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+      nodePort: 30100
