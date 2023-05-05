@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: docker-image-1
-          image: gcr.io/clus-demo/docker-image:latest
+          image: gcr.io/clus-demo/test-env-image:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
@@ -88,4 +88,4 @@ spec:
     - protocol: TCP
       port: 3000
       targetPort: 3000
-      nodePort: 30100
+      nodePort: 30200
