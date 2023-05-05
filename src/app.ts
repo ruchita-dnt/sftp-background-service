@@ -81,10 +81,10 @@ app.post("/", async (req: any, res: any) => {
       fileLocation: `https://storage.googleapis.com/${bucketName}/${destinationFolder}${fileName}`,
     });
     const payloadBuffer = Buffer.from(payload);
-    // const sendMessage = await pubsub
-    //   .topic("ge-queue")
-    //   .publishMessage({ data: payloadBuffer });
-    // console.log("sendMessage", sendMessage);
+    const sendMessage = await pubsub
+      .topic("ge-queue")
+      .publishMessage({ data: payloadBuffer });
+    console.log("sendMessage", sendMessage);
   }
   return res.status(200).json({
     status: 200,
