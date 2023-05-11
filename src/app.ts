@@ -66,12 +66,9 @@ app.post("/", async (req: any, res: any) => {
     //   : "ODW_data_files/";
     //This function will upload the files to bucket
 
-    const upload = await Bucket.upload(
-      `${process.env.destinationPath}${fileName}`,
-      {
-        destination: `${destinationFolder}${fileName}`,
-      }
-    );
+    const upload = await Bucket.upload(`${__dirname}/sftp-files/${fileName}`, {
+      destination: `${destinationFolder}${fileName}`,
+    });
     console.log("file uploaded ", fileName, " on bucket ", bucketName);
     const payload = JSON.stringify({
       fileType: "QAR",
@@ -120,11 +117,11 @@ async function downloadFolder() {
   try {
     //Connection to the SFTP server (This will be in configurable - For now it is static as we have demo SFTP server)
     await sftp.connect({
-      host: "35.228.207.19",
-      port: 22,
-      user: "user7",
-      password: "User7@123",
-      secure: true,
+      host: process.env.HOST,
+      port: process.env.PORT,
+      user: process.env.USER,
+      password: process.env.PASSWORD,
+      secure: process.env.SECURE,
     });
     console.log("Connected to SFTP server");
 
@@ -172,10 +169,7 @@ const downloadFiles = async (
           allextension.includes("*") ||
           allextension.includes(fileExtension)
         ) {
-          await sftp.get(
-            `${filePath}`,
-            `${process.env.destinationPath}${file.name}`
-          );
+          await sftp.get(`${filePath}`, `${__dirname}/sftp-files/${file.name}`);
           const removePath = path.replace(/\\/g, "");
           filesArray.push(`${removePath}/${file.name}`);
         }

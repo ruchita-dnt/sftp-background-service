@@ -14,7 +14,7 @@ spec:
         spec:
           containers:
             - name: cronv2
-              image: gcr.io/ge-dms-385011/docker-image:latest
+              image: gcr.io/ge-dms-385011/asl-sftp-job:latest
               imagePullPolicy: IfNotPresent
               command:
                 - npm
@@ -71,6 +71,31 @@ spec:
                     secretKeyRef:
                       name: sftp-service-secret
                       key: ftpServerPath
+                - name: HOST
+                  valueFrom:
+                    secretKeyRef:
+                      name: sftp-service-secret
+                      key: HOST
+                - name: PORT
+                  valueFrom:
+                    secretKeyRef:
+                      name: sftp-service-secret
+                      key: PORT
+                - name: USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: sftp-service-secret
+                      key: USER
+                - name: PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: sftp-service-secret
+                      key: PASSWORD
+                - name: SECURE
+                  valueFrom:
+                    secretKeyRef:
+                      name: sftp-service-secret
+                      key: SECURE
           restartPolicy: OnFailure
   schedule: "0 */12 * * *"
   successfulJobsHistoryLimit: 3

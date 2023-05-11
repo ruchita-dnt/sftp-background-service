@@ -7,7 +7,7 @@ metadata:
   labels:
     app: sftp-background-deployment
 spec:
-  replicas: 2 # number of pods
+  replicas: 1 # number of pods
   selector:
     matchLabels:
       app: sftp-background-deployment
@@ -18,62 +18,87 @@ spec:
     spec:
       containers:
         - name: docker-image-1
-          image: gcr.io/ge-dms-385011/docker-image:latest
+          image: gcr.io/ge-dms-385011/asl-sftp-job:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
               protocol: TCP
           env:
-                - name: CLIENT_EMAIL
-                  valueFrom:
-                    secretKeyRef:
-                      name: sftp-service-secret
-                      key: CLIENT_EMAIL
-                - name: CLIENT_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: sftp-service-secret
-                      key: CLIENT_ID
-                - name: PRIVATE_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: sftp-service-secret
-                      key: PRIVATE_KEY
-                - name: PROJECT_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: sftp-service-secret
-                      key: PROJECT_ID
-                - name: TOKEN_URL
-                  valueFrom:
-                    secretKeyRef:
-                      name: sftp-service-secret
-                      key: TOKEN_URL
-                - name: allFileExtension
-                  valueFrom:
-                    secretKeyRef:
-                      name: sftp-service-secret
-                      key: allFileExtension
-                - name: apiURL
-                  valueFrom:
-                    secretKeyRef:
-                      name: sftp-service-secret
-                      key: apiURL
-                - name: bucketName
-                  valueFrom:
-                    secretKeyRef:
-                      name: sftp-service-secret
-                      key: bucketName
-                - name: destinationPath
-                  valueFrom:
-                    secretKeyRef:
-                      name: sftp-service-secret
-                      key: destinationPath
-                - name: ftpServerPath
-                  valueFrom:
-                    secretKeyRef:
-                      name: sftp-service-secret
-                      key: ftpServerPath
+            - name: CLIENT_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: sftp-service-secret
+                  key: CLIENT_EMAIL
+            - name: CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: sftp-service-secret
+                  key: CLIENT_ID
+            - name: PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: sftp-service-secret
+                  key: PRIVATE_KEY
+            - name: PROJECT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: sftp-service-secret
+                  key: PROJECT_ID
+            - name: TOKEN_URL
+              valueFrom:
+                secretKeyRef:
+                  name: sftp-service-secret
+                  key: TOKEN_URL
+            - name: allFileExtension
+              valueFrom:
+                secretKeyRef:
+                  name: sftp-service-secret
+                  key: allFileExtension
+            - name: apiURL
+              valueFrom:
+                secretKeyRef:
+                  name: sftp-service-secret
+                  key: apiURL
+            - name: bucketName
+              valueFrom:
+                secretKeyRef:
+                  name: sftp-service-secret
+                  key: bucketName
+            - name: destinationPath
+              valueFrom:
+                secretKeyRef:
+                  name: sftp-service-secret
+                  key: destinationPath
+            - name: ftpServerPath
+              valueFrom:
+                secretKeyRef:
+                  name: sftp-service-secret
+                  key: ftpServerPath
+            - name: HOST
+              valueFrom:
+                secretKeyRef:
+                  name: sftp-service-secret
+                  key: HOST
+            - name: PORT
+              valueFrom:
+                secretKeyRef:
+                  name: sftp-service-secret
+                  key: PORT
+            - name: USER
+              valueFrom:
+                secretKeyRef:
+                  name: sftp-service-secret
+                  key: USER
+            - name: PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: sftp-service-secret
+                  key: PASSWORD
+            - name: SECURE
+              valueFrom:
+                secretKeyRef:
+                  name: sftp-service-secret
+                  key: SECURE
 ---
 apiVersion: v1
 kind: Service
