@@ -7,6 +7,7 @@ const sftp = new Client();
 import { Storage } from "@google-cloud/storage";
 import { PubSub } from "@google-cloud/pubsub";
 import { join } from "path";
+const Promises = require('bluebird');
 
 const gcpConfig = {
   projectId: process.env.PROJECT_ID,
@@ -61,21 +62,21 @@ app.post("/", async (req: any, res: any) => {
     const month = currentDate.getMonth() + 1;
     const date = currentDate.getDate();
     const destinationFolder = `QAR/${parentFolderName}/${year}/${month}/${date}/`;
-    // const destinationFolder = fileNameWithoutExt.includes("QAR")
-    //   ? `QAR/${parentFolderName}/${year}/${month}/${date}/`
-    //   : "ODW_data_files/";
     //This function will upload the files to bucket
-
-    const upload = await Bucket.upload(
-      `${process.env.destinationPath}${fileName}`,
-      {
-        destination: `${destinationFolder}${fileName}`,
-      }
-    );
+    // const upload = await Bucket.upload(
+    //   `${process.env.destinationPath}${fileName}`,
+    //   {
+    //     destination: `${destinationFolder}${fileName}`,
+    //     resumable: false,
+    //     metadata: {
+    //       cacheControl: 'public, max-age=31536000'
+    //     }
+    //   }
+    // );
     console.log("file uploaded ", fileName, " on bucket ", bucketName);
+    console.log((new Date()).toLocaleString(),`~~~~~~~~~~~~~~~~~~~~File ${destinationFolder} uploaded successfully.`);
     const payload = JSON.stringify({
       fileType: "QAR",
-      // fileType: fileName.includes("QAR") ? "QAR" : "ODW",
       fileName: fileName,
       bucketName,
       fileLocation: `https://storage.googleapis.com/${bucketName}/${destinationFolder}${fileName}`,
@@ -132,7 +133,7 @@ async function downloadFolder() {
     const allextension = process.env.allFileExtension || "txt";
     //This will list all the files present in the SFTP server
     await downloadFiles(process.env.ftpServerPath!, fileArrays, allextension);
-    console.log("fileArrays", fileArrays);
+    // console.log("fileArrays", fileArrays);
     await doPostRequest({ downloadedFiles: fileArrays });
   } catch (err) {
     console.error(err);
@@ -150,11 +151,11 @@ const downloadFiles = async (
 ) => {
   try {
     const files = await sftp.list(path);
-
+    // console.log("files11111", files);
+    console.log((new Date()).toLocaleString(),"-----------------------Inside download files");
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
-      const fileExtension = file.name.split(".")[1];
-      let filePath;
+      let filePath: string;
       if (path !== "/") {
         filePath = join(path, file.name);
       } else {
@@ -166,22 +167,32 @@ const downloadFiles = async (
       if (stat.isDirectory) {
         await downloadFiles(filePath, filesArray, allextension);
       } else {
-        console.log("path ", path);
+        console.log("path ", path, file.name);
         console.log("fileArrays", filesArray);
+        const fileExtension = file.name.split(".")[1];
         if (
           allextension.includes("*") ||
           allextension.includes(fileExtension)
         ) {
-          await sftp.get(
-            `${filePath}`,
-            `${process.env.destinationPath}${file.name}`
-          );
+          console.log("in if after fileArray~~~~");
+          // await sftp.get(
+          //   `${filePath}`,
+          //   `${process.env.destinationPath}${file.name}`);
           const removePath = path.replace(/\\/g, "");
           filesArray.push(`${removePath}/${file.name}`);
         }
       }
+      Promises.map(filesArray, (file: string) =>
+      {
+        const fileStream = Bucket.file(file.split('/')[1]).createWriteStream();
+        console.log("filePath!!!!!!!", filePath);
+        return sftp.fastGet(`${filePath}`, fileStream).then(() => 
+        { 
+          console.log(`File ${file} uploaded successfully`); 
+        }); 
+      }, { concurrency: 10 }); // Optional concurrency limit to increase speed })
     }
-
+    console.log("outside~~~~~~~~~~~");
     return filesArray;
   } catch (error) {
     console.error("Error from getAllFiles", error);
@@ -198,8 +209,8 @@ async function doPostRequest(payload: any) {
       // delete file after success from File Reciver API
       for (let i = 0; i < payload.downloadedFiles.length; i++) {
         const filePath = payload.downloadedFiles[i];
-        const deleteFile = await sftp.delete(filePath);
-        console.log(filePath, "File deleted", deleteFile);
+        // const deleteFile = await sftp.delete(filePath);
+        // console.log(filePath, "File deleted", deleteFile);
       }
     }
   } catch (error) {

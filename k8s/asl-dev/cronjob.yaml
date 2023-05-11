@@ -15,6 +15,15 @@ spec:
           containers:
             - name: cronv2
               image: gcr.io/clus-demo/docker-image:latest
+              resources:
+                requests:
+                  memory: "1Gi"
+                  ephemeral-storage: 1Gi
+                  cpu: "500m"
+                limits:
+                  memory: "1Gi"
+                  ephemeral-storage: 1Gi
+                  cpu: "500m"
               imagePullPolicy: IfNotPresent
               command:
                 - npm
