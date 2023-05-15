@@ -15,6 +15,15 @@ spec:
           containers:
             - name: cronv2-test
               image: gcr.io/clus-demo/test-env-image:latest
+              resources:
+                requests:
+                  memory: "1Gi"
+                  ephemeral-storage: 1Gi
+                  cpu: "500m"
+                limits:
+                  memory: "1Gi"
+                  ephemeral-storage: 1Gi
+                  cpu: "500m"
               imagePullPolicy: IfNotPresent
               command:
                 - npm
@@ -71,6 +80,31 @@ spec:
                     secretKeyRef:
                       name: sftp-service-secret-test
                       key: ftpServerPath
+                - name: HOST
+                  valueFrom:
+                    secretKeyRef:
+                      name: sftp-service-secret-test
+                      key: HOST
+                - name: PORT
+                  valueFrom:
+                    secretKeyRef:
+                      name: sftp-service-secret-test
+                      key: PORT
+                - name: USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: sftp-service-secret-test
+                      key: USER
+                - name: PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: sftp-service-secret-test
+                      key: PASSWORD
+                - name: SECURE
+                  valueFrom:
+                    secretKeyRef:
+                      name: sftp-service-secret-test
+                      key: SECURE
           restartPolicy: OnFailure
   schedule: "0 */12 * * *"
   successfulJobsHistoryLimit: 3
