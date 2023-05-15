@@ -63,16 +63,10 @@ app.post("/", async (req: any, res: any) => {
     const date = currentDate.getDate();
     const destinationFolder = `QAR/${parentFolderName}/${year}/${month}/${date}/`;
     //This function will upload the files to bucket
-    // const upload = await Bucket.upload(
-    //   `${process.env.destinationPath}${fileName}`,
-    //   {
-    //     destination: `${destinationFolder}${fileName}`,
-    //     resumable: false,
-    //     metadata: {
-    //       cacheControl: 'public, max-age=31536000'
-    //     }
-    //   }
-    // );
+
+    const upload = await Bucket.upload(`${process.env.destinationPath}${fileName}`, {
+      destination: `${destinationFolder}${fileName}`,
+    });
     console.log("file uploaded ", fileName, " on bucket ", bucketName);
     console.log((new Date()).toLocaleString(),`~~~~~~~~~~~~~~~~~~~~File ${destinationFolder} uploaded successfully.`);
     const payload = JSON.stringify({
@@ -121,11 +115,11 @@ async function downloadFolder() {
   try {
     //Connection to the SFTP server (This will be in configurable - For now it is static as we have demo SFTP server)
     await sftp.connect({
-      host: "35.228.207.19",
-      port: 22,
-      user: "user7",
-      password: "User7@123",
-      secure: true,
+      host: process.env.HOST,
+      port: process.env.PORT,
+      user: process.env.USER,
+      password: process.env.PASSWORD,
+      secure: process.env.SECURE,
     });
     console.log("Connected to SFTP server");
 
@@ -174,25 +168,13 @@ const downloadFiles = async (
           allextension.includes("*") ||
           allextension.includes(fileExtension)
         ) {
-          console.log("in if after fileArray~~~~");
-          // await sftp.get(
-          //   `${filePath}`,
-          //   `${process.env.destinationPath}${file.name}`);
           const removePath = path.replace(/\\/g, "");
           filesArray.push(`${removePath}/${file.name}`);
+          await sftp.get(`${filePath}`, `${process.env.destinationPath}${file.name}`);
         }
       }
-      Promises.map(filesArray, (file: string) =>
-      {
-        const fileStream = Bucket.file(file.split('/')[1]).createWriteStream();
-        console.log("filePath!!!!!!!", filePath);
-        return sftp.fastGet(`${filePath}`, fileStream).then(() => 
-        { 
-          console.log(`File ${file} uploaded successfully`); 
-        }); 
-      }, { concurrency: 10 }); // Optional concurrency limit to increase speed })
     }
-    console.log("outside~~~~~~~~~~~");
+    console.log("outside~~~~~~~~~~~", filesArray);
     return filesArray;
   } catch (error) {
     console.error("Error from getAllFiles", error);
@@ -207,11 +189,11 @@ async function doPostRequest(payload: any) {
     console.log("API resp", res.data);
     if (res.status === 200) {
       // delete file after success from File Reciver API
-      for (let i = 0; i < payload.downloadedFiles.length; i++) {
-        const filePath = payload.downloadedFiles[i];
-        // const deleteFile = await sftp.delete(filePath);
-        // console.log(filePath, "File deleted", deleteFile);
-      }
+      // for (let i = 0; i < payload.downloadedFiles.length; i++) {
+      //   const filePath = payload.downloadedFiles[i];
+      //   // const deleteFile = await sftp.delete(filePath);
+      //   // console.log(filePath, "File deleted", deleteFile);
+      // }
     }
   } catch (error) {
     console.log("Error in doPostRequest", error);

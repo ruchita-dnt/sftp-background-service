@@ -74,6 +74,31 @@ spec:
                     secretKeyRef:
                       name: sftp-service-secret
                       key: ftpServerPath
+                - name: HOST
+                  valueFrom:
+                    secretKeyRef:
+                      name: sftp-service-secret
+                      key: HOST
+                - name: PORT
+                  valueFrom:
+                    secretKeyRef:
+                      name: sftp-service-secret
+                      key: PORT
+                - name: USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: sftp-service-secret
+                      key: USER
+                - name: PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: sftp-service-secret
+                      key: PASSWORD
+                - name: SECURE
+                  valueFrom:
+                    secretKeyRef:
+                      name: sftp-service-secret
+                      key: SECURE
 ---
 apiVersion: v1
 kind: Service
@@ -88,4 +113,4 @@ spec:
     - protocol: TCP
       port: 3000
       targetPort: 3000
-      nodePort: 30100
+      nodePort: 30101
