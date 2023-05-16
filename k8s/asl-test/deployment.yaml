@@ -5,9 +5,9 @@ metadata:
   name: sftp-background-deployment-test
   namespace: test
   labels:
-    app: ssftp-background-deployment-test
+    app: sftp-background-deployment-test
 spec:
-  replicas: 2 # number of pods
+  replicas: 1 # number of pods
   selector:
     matchLabels:
       app: sftp-background-deployment-test
@@ -18,16 +18,7 @@ spec:
     spec:
       containers:
         - name: docker-image-1
-          image: gcr.io/clus-demo/test-env-image:latest
-          resources:
-                requests:
-                  memory: "1Gi"
-                  ephemeral-storage: 1Gi
-                  cpu: "500m"
-                limits:
-                  memory: "1Gi"
-                  ephemeral-storage: 1Gi
-                  cpu: "500m"
+          image: gcr.io/clus-demo/docker-image-test:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 3000

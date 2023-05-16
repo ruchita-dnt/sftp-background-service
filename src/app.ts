@@ -7,7 +7,7 @@ const sftp = new Client();
 import { Storage } from "@google-cloud/storage";
 import { PubSub } from "@google-cloud/pubsub";
 import { join } from "path";
-const Promises = require('bluebird');
+const Promises = require("bluebird");
 
 const gcpConfig = {
   projectId: process.env.PROJECT_ID,
@@ -49,7 +49,7 @@ app.use(bodyParser.json());
 
 //This POST API will upload the downloaded files to Google storage area in the bucket
 app.post("/", async (req: any, res: any) => {
-  console.log("req.body.downloadedFiles", req.body.downloadedFiles);
+  console.log("in api payload: ", req.body.downloadedFiles);
   for (let i = 0; i < req.body.downloadedFiles.length; i++) {
     const parentFolderName = req.body.downloadedFiles[i].split("/")[0];
     const fileName = req.body.downloadedFiles[i].split("/")[1];
@@ -64,11 +64,15 @@ app.post("/", async (req: any, res: any) => {
     const destinationFolder = `QAR/${parentFolderName}/${year}/${month}/${date}/`;
     //This function will upload the files to bucket
 
-    const upload = await Bucket.upload(`${process.env.destinationPath}${fileName}`, {
-      destination: `${destinationFolder}${fileName}`,
-    });
-    console.log("file uploaded ", fileName, " on bucket ", bucketName);
-    console.log((new Date()).toLocaleString(),`~~~~~~~~~~~~~~~~~~~~File ${destinationFolder} uploaded successfully.`);
+    console.log("File Upload start: ", fileName);
+    const upload = await Bucket.upload(
+      `${process.env.destinationPath}${fileName}`,
+      {
+        destination: `${destinationFolder}${fileName}`,
+      }
+    );
+    console.log("file uploaded end", fileName, " on bucket ", bucketName);
+
     const payload = JSON.stringify({
       fileType: "QAR",
       fileName: fileName,
@@ -127,7 +131,7 @@ async function downloadFolder() {
     const allextension = process.env.allFileExtension || "txt";
     //This will list all the files present in the SFTP server
     await downloadFiles(process.env.ftpServerPath!, fileArrays, allextension);
-    // console.log("fileArrays", fileArrays);
+    console.log("fileArrays to send FR api: ", fileArrays);
     await doPostRequest({ downloadedFiles: fileArrays });
   } catch (err) {
     console.error(err);
@@ -145,8 +149,7 @@ const downloadFiles = async (
 ) => {
   try {
     const files = await sftp.list(path);
-    // console.log("files11111", files);
-    console.log((new Date()).toLocaleString(),"-----------------------Inside download files");
+    console.log("path: ", path);
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       let filePath: string;
@@ -159,22 +162,27 @@ const downloadFiles = async (
       // console.log("stat of ", file.name);
       // console.log("stat", stat);
       if (stat.isDirectory) {
+        console.log("Folder: ", path);
         await downloadFiles(filePath, filesArray, allextension);
       } else {
-        console.log("path ", path, file.name);
-        console.log("fileArrays", filesArray);
         const fileExtension = file.name.split(".")[1];
         if (
           allextension.includes("*") ||
           allextension.includes(fileExtension)
         ) {
+          console.log("FIle: ", file.name);
           const removePath = path.replace(/\\/g, "");
           filesArray.push(`${removePath}/${file.name}`);
-          await sftp.get(`${filePath}`, `${process.env.destinationPath}${file.name}`);
+          console.log("File download start", file.name);
+          await sftp.get(
+            `${filePath}`,
+            `${process.env.destinationPath}${file.name}`
+          );
+          console.log("File download end: ", file.name);
         }
       }
     }
-    console.log("outside~~~~~~~~~~~", filesArray);
+
     return filesArray;
   } catch (error) {
     console.error("Error from getAllFiles", error);
@@ -189,11 +197,11 @@ async function doPostRequest(payload: any) {
     console.log("API resp", res.data);
     if (res.status === 200) {
       // delete file after success from File Reciver API
-      // for (let i = 0; i < payload.downloadedFiles.length; i++) {
-      //   const filePath = payload.downloadedFiles[i];
-      //   // const deleteFile = await sftp.delete(filePath);
-      //   // console.log(filePath, "File deleted", deleteFile);
-      // }
+      for (let i = 0; i < payload.downloadedFiles.length; i++) {
+        const filePath = payload.downloadedFiles[i];
+        // const deleteFile = await sftp.delete(filePath);
+        // console.log("File deleted: ", deleteFile);
+      }
     }
   } catch (error) {
     console.log("Error in doPostRequest", error);
