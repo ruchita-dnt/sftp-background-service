@@ -214,12 +214,12 @@ import { TYPES } from "./config/types";
 
 const cronJobService = Container.get<ICronjobService>(TYPES.CronjobService);
 
-app.listen(env.APP_PORT, () => {
+app.listen(env.API_PORT, () => {
   console.log(
-    `⚡️[server]: Server is running at http://localhost:${env.APP_PORT}`
+    `⚡️[server]: Server is running at ${env.API_HOST}:${env.API_PORT}`
   );
   console.log(
-    `⚡️[server]: API ROOT: http://localhost:${env.APP_PORT}${env.API_ROOT}/${env.API_VERSION}`
+    `⚡️[server]: API ROOT: ${env.API_HOST}:${env.API_PORT}${env.API_ROOT}/${env.API_VERSION}`
   );
   cronJobService.cronJob();
 });

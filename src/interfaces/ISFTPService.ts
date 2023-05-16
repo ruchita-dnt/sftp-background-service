@@ -10,4 +10,6 @@ export interface ISFTPService {
     filesArray: string[],
     selectedFileType: string
   ): Promise<string[]>;
+
+  deleteFiles(path: string): Promise<any>;
 }

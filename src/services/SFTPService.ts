@@ -68,4 +68,18 @@ export class SFTPService implements ISFTPService {
       );
     }
   }
+
+  async deleteFiles(path: string): Promise<any> {
+    try {
+      const deleteFile = await sftp.delete(path);
+      console.log(path, "File deleted", deleteFile);
+
+      return deleteFile;
+    } catch (error) {
+      throw new InternalServerError(
+        "An error occurred while interacting with the deleteFiles service." +
+          error
+      );
+    }
+  }
 }
