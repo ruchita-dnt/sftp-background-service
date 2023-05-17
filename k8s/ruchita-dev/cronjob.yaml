@@ -98,4 +98,4 @@ spec:
                       key: SECURE
           restartPolicy: OnFailure
   schedule: "0 */12 * * *"
-  successfulJobsHistoryLimit: 3
+  successfulJobsHistoryLimit: 0

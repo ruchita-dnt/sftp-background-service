@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sftp-ingress
+  namespace: dev
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: "sftp-ip"
+spec:
+  rules:
+    - http:
+        paths:
+        - path: /*
+          pathType: ImplementationSpecific
+          backend:
+            service:
+              name: sftp-background-service
+              port:
+                number: 30000

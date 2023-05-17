@@ -5,9 +5,9 @@ metadata:
   name: sftp-background-deployment-test
   namespace: test
   labels:
-    app: ssftp-background-deployment-test
+    app: sftp-background-deployment-test
 spec:
-  replicas: 2 # number of pods
+  replicas: 1 # number of pods
   selector:
     matchLabels:
       app: sftp-background-deployment-test
@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: docker-image-1
-          image: gcr.io/clus-demo/test-env-image:latest
+          image: gcr.io/clus-demo/docker-image-test:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
@@ -74,6 +74,31 @@ spec:
                 secretKeyRef:
                   name: sftp-service-secret-test
                   key: ftpServerPath
+            - name: HOST
+              valueFrom:
+                secretKeyRef:
+                  name: sftp-service-secret-test
+                  key: HOST
+            - name: PORT
+              valueFrom:
+                secretKeyRef:
+                  name: sftp-service-secret-test
+                  key: PORT
+            - name: USER
+              valueFrom:
+                secretKeyRef:
+                  name: sftp-service-secret-test
+                  key: USER
+            - name: PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: sftp-service-secret-test
+                  key: PASSWORD
+            - name: SECURE
+              valueFrom:
+                secretKeyRef:
+                  name: sftp-service-secret-test
+                  key: SECURE
 ---
 apiVersion: v1
 kind: Service
