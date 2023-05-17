@@ -14,7 +14,7 @@ spec:
         spec:
           containers:
             - name: cronv2
-              image: gcr.io/clus-demo/docker-image:latest
+              image: gcr.io/clus-demo/docker-image-dev
               imagePullPolicy: IfNotPresent
               command:
                 - npm

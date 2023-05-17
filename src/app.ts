@@ -128,9 +128,15 @@ async function downloadFolder() {
     console.log("Connected to SFTP server");
 
     const fileArrays: String[] = [];
+    const allPromise: any[] = [];
     const allextension = process.env.allFileExtension || "txt";
     //This will list all the files present in the SFTP server
-    await downloadFiles(process.env.ftpServerPath!, fileArrays, allextension);
+    await downloadFiles(
+      process.env.ftpServerPath!,
+      fileArrays,
+      allextension,
+      allPromise
+    );
     console.log("fileArrays to send FR api: ", fileArrays);
     await doPostRequest({ downloadedFiles: fileArrays });
   } catch (err) {
@@ -145,7 +151,8 @@ async function downloadFolder() {
 const downloadFiles = async (
   path: string,
   filesArray: any,
-  allextension: string
+  allextension: string,
+  allPromise: any[]
 ) => {
   try {
     const files = await sftp.list(path);
@@ -163,7 +170,7 @@ const downloadFiles = async (
       // console.log("stat", stat);
       if (stat.isDirectory) {
         console.log("Folder: ", path);
-        await downloadFiles(filePath, filesArray, allextension);
+        await downloadFiles(filePath, filesArray, allextension, allPromise);
       } else {
         const fileExtension = file.name.split(".")[1];
         if (
@@ -174,10 +181,28 @@ const downloadFiles = async (
           const removePath = path.replace(/\\/g, "");
           filesArray.push(`${removePath}/${file.name}`);
           console.log("File download start", file.name);
-          await sftp.get(
-            `${filePath}`,
-            `${process.env.destinationPath}${file.name}`
+          const downloadMultipleFile = (
+            filePath: any,
+            destinationPath: any,
+            fileName: any
+          ) => {
+            return new Promise((resolve, reject) => {
+              console.log("File download start", file.name);
+              sftp.get(`${filePath}`, `${destinationPath}${fileName}`);
+            });
+          };
+
+          allPromise.push(
+            downloadMultipleFile(
+              filePath,
+              process.env.destinationPath,
+              file.name
+            )
           );
+          // await sftp.get(
+          //   `${filePath}`,
+          //   `${process.env.destinationPath}${file.name}`
+          // );
           console.log("File download end: ", file.name);
         }
       }
