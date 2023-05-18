@@ -51,6 +51,7 @@
     "reflect-metadata": "^0.1.13",
     "ssh2-sftp-client": "^9.1.0",
     "typedi": "^0.8.0",
-    "winston": "^3.8.2"
+    "winston": "^3.8.2",
+    "db-sdk": "file:db-sdk-1.0.4.tgz"
   }
 }

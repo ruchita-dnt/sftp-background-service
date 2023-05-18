@@ -5,6 +5,8 @@ import { SFTPCreateConnectionService } from "../types/SFTPService";
 import { join } from "path";
 const Client = require("ssh2-sftp-client");
 const sftp = new Client();
+import { Database } from "db-sdk";
+import { filemaster } from "db-sdk/src/FileMaster";
 
 @injectable()
 export class SFTPService implements ISFTPService {
@@ -46,6 +48,7 @@ export class SFTPService implements ISFTPService {
         if (stat.isDirectory) {
           await this.downloadFiles(filePath, filesArray, selectedFileType);
         } else {
+          //ToDo: Need to implement Promise here
           if (
             selectedFileType.includes("*") ||
             selectedFileType.includes(fileExtension)
@@ -56,6 +59,24 @@ export class SFTPService implements ISFTPService {
             );
             const removePath = path.replace(/\\/g, "");
             filesArray.push(`${removePath}/${file.name}`);
+            //ToDo: Create Entry in file_master and file_process_details with status - PICKUP_BY_SFTP
+            //Data Needed in both table
+            /** 
+             * file_master: operationId, projectId, fileTypeId, tailNo, flightNo, fileName, sourcePath, startTime, status, createdAt, updatedAt
+             * 
+             * file_process_details: fileId, status, description, time, createdAt
+             */
+            const database = new Database();
+            let connection;
+            if (typeof connection === "undefined") {
+              // Connect to the MySQL database from layer
+              connection = await database.createDBconnection();
+            }
+            const fileMasterRepo = await database.getEntity(filemaster);
+            const fileProcessDetailsRepo = await database.getEntity("fileprocessdetails");
+            const newFileMaster = new filemaster();
+            newFileMaster.operationId = 1;
+            database.saveEntity(fileMasterRepo, newFileMaster);
           }
         }
       }
