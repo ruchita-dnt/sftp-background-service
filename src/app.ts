@@ -5,11 +5,8 @@ const dotenv = require("dotenv").config();
 const Client = require("ssh2-sftp-client");
 const sftp = new Client();
 import { Storage } from "@google-cloud/storage";
-import { PubSub } from "@google-cloud/pubsub";
 import { join } from "path";
 import FormData from "form-data";
-import multer from "multer";
-import MulterGoogleCloudStorage from "multer-cloud-storage";
 
 const gcpConfig = {
   projectId: process.env.PROJECT_ID,
@@ -23,7 +20,6 @@ const gcpConfig = {
 
 //GCS - Cloud storage details
 const storage = new Storage(gcpConfig);
-const pubsub = new PubSub(gcpConfig);
 
 if (!dotenv) {
   throw new Error("Unable to use dot env lib");
@@ -31,32 +27,6 @@ if (!dotenv) {
 
 // Set the NODE_ENV to 'development' by default
 process.env.NODE_ENV = "development";
-
-//Bucket name should read from the environment variables
-const bucketName = process.env.bucketName;
-const Bucket = storage.bucket(bucketName!);
-
-const upload = multer({
-  storage: new MulterGoogleCloudStorage({
-    bucket: bucketName,
-    projectId: gcpConfig.projectId,
-    credentials: gcpConfig.credentials,
-    destination: (req: any, file: any, cb: any) => {
-      const currentDate = new Date();
-      const year = currentDate.getFullYear();
-      const month = currentDate.getMonth() + 1;
-      const date = currentDate.getDate();
-      cb(null, `QAR/${req.body.tailNumber}/${year}/${month}/${date}/`);
-    },
-    filename: (req: any, file: any, cb: any) => {
-      const currentDate = new Date();
-      const year = currentDate.getFullYear();
-      const month = currentDate.getMonth() + 1;
-      const date = currentDate.getDate();
-      cb(null, `${file.originalname.replace(" ", "")}`);
-    },
-  }),
-});
 
 // express server
 const app = express();
@@ -70,31 +40,6 @@ app.use(
 
 // middlware for parse data in json
 app.use(bodyParser.json());
-
-//This POST API will upload the downloaded files to Google storage area in the bucket
-app.post("/", upload.single("file"), async (req: any, res: any) => {
-  console.log(`File ${req.file.originalname} Uploaded on ${bucketName}`);
-
-  const payload = JSON.stringify({
-    fileType: "QAR",
-    // fileType: fileName.includes("QAR") ? "QAR" : "ODW",
-    fileName: req.file.originalname,
-    bucketName,
-    fileLocation: req.file.linkUrl,
-  });
-  console.log("Queue Message: ", JSON.parse(payload));
-  const payloadBuffer = Buffer.from(payload);
-  const sendMessage = await pubsub
-    .topic("ge-queue")
-    .publishMessage({ data: payloadBuffer });
-  console.log("sendMessage", sendMessage);
-
-  return res.status(200).json({
-    status: 200,
-    message: "Files uploaded successfully",
-    data: req.file.originalname,
-  });
-});
 
 // This endpoint is for Document Management API. Listen all messages from Google Pub/Sub.
 app.post("/listen", (req: any, res: any) => {
@@ -232,7 +177,7 @@ const downloadFiles = async (
                   resolve(`File deleted from SFTP: ${tailNumber}/${file.name}`);
                 }
               } catch (error) {
-                reject(`Error in promise: ${fileName}`);
+                reject(`Error in promise: ${fileName}, error: ${error}`);
               }
             });
           };
@@ -246,25 +191,6 @@ const downloadFiles = async (
     console.error("Error from getAllFiles", error);
   }
 };
-
-// API call for send data to FileReciver API
-async function doPostRequest(payload: any) {
-  try {
-    console.log("payload", payload);
-    const res = await axios.post(`${process.env.apiURL}`, payload);
-    console.log("API response: ", res.data);
-    if (res.status === 200) {
-      // delete file after success from File Reciver API
-      for (let i = 0; i < payload.downloadedFiles.length; i++) {
-        const filePath = payload.downloadedFiles[i];
-        // const deleteFile = await sftp.delete(filePath);
-        // console.log("File deleted", deleteFile);
-      }
-    }
-  } catch (error) {
-    console.log("Error in doPostRequest", error);
-  }
-}
 
 app.listen(3000, function() {
   console.log("server is running on port 3000");
