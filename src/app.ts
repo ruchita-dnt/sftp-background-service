@@ -7,10 +7,9 @@ const sftp = new Client();
 import { Storage } from "@google-cloud/storage";
 import { PubSub } from "@google-cloud/pubsub";
 import { join } from "path";
-
-sftp.on("download", (info: any) => {
-  console.log(`Listener: Download ${info.source}`);
-});
+import FormData from "form-data";
+import multer from "multer";
+import MulterGoogleCloudStorage from "multer-cloud-storage";
 
 const gcpConfig = {
   projectId: process.env.PROJECT_ID,
@@ -37,6 +36,28 @@ process.env.NODE_ENV = "development";
 const bucketName = process.env.bucketName;
 const Bucket = storage.bucket(bucketName!);
 
+const upload = multer({
+  storage: new MulterGoogleCloudStorage({
+    bucket: bucketName,
+    projectId: gcpConfig.projectId,
+    credentials: gcpConfig.credentials,
+    destination: (req: any, file: any, cb: any) => {
+      const currentDate = new Date();
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth() + 1;
+      const date = currentDate.getDate();
+      cb(null, `QAR/${req.body.tailNumber}/${year}/${month}/${date}/`);
+    },
+    filename: (req: any, file: any, cb: any) => {
+      const currentDate = new Date();
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth() + 1;
+      const date = currentDate.getDate();
+      cb(null, `${file.originalname.replace(" ", "")}`);
+    },
+  }),
+});
+
 // express server
 const app = express();
 
@@ -51,52 +72,27 @@ app.use(
 app.use(bodyParser.json());
 
 //This POST API will upload the downloaded files to Google storage area in the bucket
-app.post("/", async (req: any, res: any) => {
-  console.log("API: ", req.body.downloadedFiles);
-  for (let i = 0; i < req.body.downloadedFiles.length; i++) {
-    const parentFolderName = req.body.downloadedFiles[i].split("/")[0];
-    const fileName = req.body.downloadedFiles[i].split("/")[1];
-    const fileNameWithoutExt = req.body.downloadedFiles[i]
-      .split("/")[1]
-      .split(".")[0];
-    //On the cloud storage area based on the file name we are storing data in different folders
-    const currentDate = new Date();
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth() + 1;
-    const date = currentDate.getDate();
-    const destinationFolder = `QAR/${parentFolderName}/${year}/${month}/${date}/`;
-    // const destinationFolder = fileNameWithoutExt.includes("QAR")
-    //   ? `QAR/${parentFolderName}/${year}/${month}/${date}/`
-    //   : "ODW_data_files/";
-    //This function will upload the files to bucket
-    console.log(new Date().toLocaleString(), "File Upload start: ", fileName);
-    const upload = await Bucket.upload(`${__dirname}/sftp-files/${fileName}`, {
-      destination: `${destinationFolder}${fileName}`,
-    });
-    console.log(
-      new Date().toLocaleString(),
-      "file uploaded end: ",
-      fileName,
-      " on bucket ",
-      bucketName
-    );
-    const payload = JSON.stringify({
-      fileType: "QAR",
-      // fileType: fileName.includes("QAR") ? "QAR" : "ODW",
-      fileName: fileName,
-      bucketName,
-      fileLocation: `https://storage.googleapis.com/${bucketName}/${destinationFolder}${fileName}`,
-    });
-    console.log("Queue Message: ", JSON.parse(payload));
-    const payloadBuffer = Buffer.from(payload);
-    const sendMessage = await pubsub
-      .topic("ge-queue")
-      .publishMessage({ data: payloadBuffer });
-    console.log("sendMessage", sendMessage);
-  }
+app.post("/", upload.single("file"), async (req: any, res: any) => {
+  console.log(`File ${req.file.originalname} Uploaded on ${bucketName}`);
+
+  const payload = JSON.stringify({
+    fileType: "QAR",
+    // fileType: fileName.includes("QAR") ? "QAR" : "ODW",
+    fileName: req.file.originalname,
+    bucketName,
+    fileLocation: req.file.linkUrl,
+  });
+  console.log("Queue Message: ", JSON.parse(payload));
+  const payloadBuffer = Buffer.from(payload);
+  const sendMessage = await pubsub
+    .topic("ge-queue")
+    .publishMessage({ data: payloadBuffer });
+  console.log("sendMessage", sendMessage);
+
   return res.status(200).json({
     status: 200,
     message: "Files uploaded successfully",
+    data: req.file.originalname,
   });
 });
 
@@ -135,7 +131,7 @@ async function downloadFolder() {
       secure: process.env.SECURE,
       // debug: console.log,
     });
-    console.log("Connected to SFTP server");
+    console.log(new Date().toLocaleString(), "Connected to SFTP server");
 
     const fileArrays: String[] = [];
     const allPromise: any[] = [];
@@ -147,12 +143,10 @@ async function downloadFolder() {
       allextension,
       allPromise
     );
-    console.log("fileArrays", fileArrays);
-    console.log("allPromise", allPromise);
     Promise.all(allPromise)
       .then(async (result: any) => {
-        console.log(new Date().toLocaleString(), "Result", result);
-        await doPostRequest({ downloadedFiles: fileArrays });
+        console.log(new Date().toLocaleString(), "All Promise Resolve");
+
         await sftp.end();
       })
       .catch(async (error: any) => {
@@ -201,37 +195,48 @@ const downloadFiles = async (
           allextension.includes(fileExtension)
         ) {
           console.log("File: ", file.name);
-          const removePath = path.replace(/\\/g, "");
-          filesArray.push(`${removePath}/${file.name}`);
-          // console.log("filePath", filePath);
-          // console.log(`${removePath}/${file.name}`);
+          const tailNumber = path.replace(/\\/g, "");
+          filesArray.push(`${tailNumber}/${file.name}`);
+
           const downloadMultipleFiles = (filePath: any, fileName: any) => {
             return new Promise(async (resolve, reject) => {
               try {
+                console.log(new Date().toLocaleString(), "File Read Started");
+                const readSream = await sftp.createReadStream(`${filePath}`);
+                console.log(new Date().toLocaleString(), "File Read End");
+
+                const formData = new FormData();
+                formData.append("tailNumber", tailNumber);
+                formData.append("file", readSream);
+
                 console.log(
                   new Date().toLocaleString(),
-                  "File download started: ",
-                  fileName
+                  "File receiver API trigger"
                 );
-                await sftp.get(
-                  `${filePath}`,
-                  `${__dirname}/sftp-files/${fileName}`
+                const apiCall = await axios.post(
+                  process.env.apiURL!,
+                  formData,
+                  {
+                    headers: { "content-type": "multipart/form-data" },
+                  }
                 );
-                console.log(
-                  new Date().toLocaleString(),
-                  " File download end: ",
-                  fileName
-                );
-                resolve(`File download end: ${fileName}`);
+                console.log(new Date().toLocaleString(), "API call End");
+                console.log("API Response", apiCall.data);
+                if (apiCall.status === 200) {
+                  const deleteFile = await sftp.delete(
+                    `${tailNumber}/${file.name}`
+                  );
+                  console.log(
+                    `File deleted from SFTP: ${tailNumber}/${file.name}`
+                  );
+                  resolve(`File deleted from SFTP: ${tailNumber}/${file.name}`);
+                }
               } catch (error) {
                 reject(`Error in promise: ${fileName}`);
               }
             });
           };
           allPromise.push(downloadMultipleFiles(filePath, file.name));
-          // console.log("File download start: ", file.name);
-          // await sftp.get(`${filePath}`, `${__dirname}/sftp-files/${file.name}`);
-          // console.log("File download end: ", file.name);
         }
       }
     }
