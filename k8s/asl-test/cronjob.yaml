@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: cronv2-test
+  name: ftp-adapter-test
   namespace: test
 spec:
   jobTemplate:
@@ -10,11 +10,11 @@ spec:
       template:
         metadata:
           labels:
-            app: cronv2-test
+            app: ftp-adapter-test
         spec:
           containers:
-            - name: cronv2-test
-              image: gcr.io/clus-demo/docker-image-test:latest
+            - name: ftp-adapter-container-test
+              image: gcr.io/clus-demo/ftp-adapter-image-test
               imagePullPolicy: IfNotPresent
               command:
                 - npm
