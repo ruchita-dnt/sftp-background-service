@@ -1,3 +1,3 @@
 export interface IFilereceiverService {
-  fileManager(files: string[]): Promise<any>;
+  fileManager(files: string[], id: number): Promise<any>;
 }

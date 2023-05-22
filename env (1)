@@ -1,0 +1,61 @@
+# Application
+API_PORT=3000
+API_ROOT=/api
+API_VERSION=v1.0
+API_HOST=http://localhost
+
+
+ftpServerPath = 'DEV'
+allFileExtension = 'txt'
+
+# Locahost
+# destinationPath = 'D:/Jay/ASL/sftp-background-service/'
+
+# Prod env
+destinationPath = '/'
+
+bucketName = 'asl_sftp_files'
+
+# Prod env
+# apiURL = 'http://10.108.4.87:3000/'
+
+# Localhost
+apiURL = 'http://localhost:3000/'
+
+# GOOGLE_APPLICATION_CREDENTIALS=./google-cloud-key.json
+
+# Ruchita's GCP Credential
+# PROJECT_ID = "ge-dms-385011"
+# TOKEN_URL = "https://oauth2.googleapis.com/token"
+# CLIENT_EMAIL = "akhil-594@ge-dms-385011.iam.gserviceaccount.com"
+# CLIENT_ID = "106103095526350940790"
+# PRIVATE_KEY = "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCG+rbyuMIyXBjT\ndxW7LXucj69Cum1VZTY0MkJX3CVJxFZbbcGjTBCyEtPvBgJy3CKELLUs/VXFmsJM\nYsCSrxCw8wXyVKiLrbtsjfz6CPPvemStcGhwQER6gmeYa7+F/lFhZrV92ajN0vtY\nIOJBct3df8OhUnMYCkup1/a4EtABUk8ytsI0/VcygoFAqWrLcvSIGHkGIynUHqPD\nHtGUWfw0EONIkIxaw9QYqVPgX6dxwtj8+QX8znrG6egqwyycpqjdkHoc1HeQXQXA\nV5FdUemBWGb1f/rUY/OcCPdq/UttA0mG/0IjcM8Zl/vKaI3qSGuqWPXeqkcd5tH/\niTkeC+crAgMBAAECggEAA77iNPyQR0icxtG/EGY4NmvnhOue3UoFShQ/oWOpxEzG\nuJMgGvwyWgJsNgdSB73fPMy8Z89NW7l2/Svbs5ZYjIdwURstCxySdFQWoKJL97JC\nn45tfnC92f/LABX4S1HEQ6E+hK3Ce0NvIDD5ruLu9r0S3pcRgFzqHEShpW+vaJdF\nyOtx+R+6LNZ1eEr7WRDtbNSEVYhAxdkfxwopssg/kF4o/nJqIiWUbYPhDQnHNnz6\nkLv3OW5xfg1VDDuMEEWrxpOnAKaOTJ2TjuGVkEAMi+nKuhlQPPM254/eCLE82hfT\ngey6TJUSm1wDKidBRuCJyvR8GX4xZC0ji/yVlXcxIQKBgQC+P5cYHXL7CGx33yo5\nRJ5ha+IsciXRV9jfcj8soFbwjk1qUnyHOAhLfgLJQW3mN6Jyby817G7i45coFuo4\nrS9pfowMD3WRhSRnumDwrI2mwTfuBcZvXUL7WKFx5pX5S1Efs6gNAOgOyM7Psct+\nCUzvYstFFgHoV5z8Bn07aT7ESwKBgQC1oSSAyCFSPtIXzU5joKoKl8UN0qL24iw6\nfRKlxcv+w+cVAfeKl0/zUZx9rqBNC1jJyWSsmKSp0nTEvxpaVHNSpjUmzlGJpR5J\n3agJd2malEEdZyTn4MeV7s79NyRDdaa7sXVPJGVwguek/XA7xjTr/djtLgrcbP81\nVTck9WbcoQKBgArT77ONqYekGRhReUO9Jg6BZ2QEMybRCyTcib/ueEREtR9CBphj\nlgVF7L6rnKenrvU4YsV86Wq8bVP4yefj43jrnOjq0FQx8bp9nxrTl1RQVvCTH5Ij\nCrbnenjTGOIRaVKWlQ/4ZzzALRUhF2Xa/af6RXtvHzisE+E8NVB2Uv41AoGBAKW7\nkcx1UXpz2k9fxqzAGQkrbeLsFkoDHWqNYCul7jvdVInlzpRG9+xFxu8kHh/PP8h5\nHYUkj/RqFqTE4G4Wa1i6UvvC/cIEyjuKp99jeBhWOYhz6sgvYs9cJsIFw/BOdcME\n7c82nd1phagWnofcl8PTUVMzVTPHvaRTysrNpnuhAoGAZPK7GuVhRlo/+4ly1nM5\niWTgRF2NhGaRsHwG+DZ8lXV31cbEJ8aXwiQrG1Qw4Fk2+t0Zh0yHcF/HcNFV+kls\nDWk5r3HdT0mvK+137kaBlmpvyBFX/GSoBGpPX1JbFkPHrvtoWYnStYrVcKtu8Quq\nurvL2EOppdbqhH3z+cZ2nyo=\n-----END PRIVATE KEY-----\n"
+
+# GCP Jay Credential
+# PROJECT_ID = "ge-dms-jay"
+# TOKEN_URL = "https://oauth2.googleapis.com/token"
+# CLIENT_EMAIL = "ge-service-270@ge-dms-jay.iam.gserviceaccount.com"
+# CLIENT_ID = "117802977698428497755"
+# PRIVATE_KEY = "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC3kK6lqcEWwDWp\nJ7CtmXMKvO0HfvDqWkSGEymnCGipzv5w6hxrR37PxPwFR3q+Jl+7uHMe5QtdDrgL\nBHHJhI+Wvlyv3bol/T0qRViA77rf2BW+ahUVSUsRZm7Kuw3D3thgTcfDmy/lJ12g\nr0IQRrEf8wlOyY3nixfRv1J5Qv2VOsV75t5I19ujruKGtTYxLVgBnE5qIFsFaGQu\n3Eh39vaaryINDTdrzo/kGO1LTmmnj1EBTbisZMzJXYM+o6Qn6Pa9o0LOiSYqNNBv\nYmacUNhPKvAOY5j1NRHxV9uS28gaezvWcQok6/7Y6xPJIBNrMy8rtTMz1HpqbL+u\n7k/z3C/VAgMBAAECggEAAMvCThqV0+pCcU4oQHXIChW2oLqGreV1TZrbVTY+n0SJ\nVZEA+DVyUdFPVxsvvOUACO7W+kfQ9vbU38ta+PONByt3zcAUNLehN8Pe4ImUPFs8\nq5DchYqbUOMqUNEN0WRvzhRtl3tenPZA5tehCDQI7uldXXeXQ21BeFna2twVAGbO\ncLhVXaTy2wveattpjeoDna86I+cq4attigAQw+wzyc/B0oO0J1mM2ScJkh7sP/Tm\nznCiyriXY28rpipufSls+YzzvylKEBnT/QbXklvErkklTGJoIgadGSSgcc2OoboI\nUMBpjx9HFQmAntt6MHB08wqYqeeBljefk2wqxZ04kwKBgQD29XUnwFQPgyJTNTb2\nN69faQLMcd8F3ZDvUOhz6TwiXjNHK9SC9AjLn3JY9iNJ6f+fKcao6IBx5VtdO8CR\nrSgmDPcpBgrcWZ4ycteqrBS0Z9/DhlwWTr2LO8/WhEgXrjly/+fGYNeD+JNr/Ihe\nTEA2QtYmRM36ukDT4oBZcGyBwwKBgQC+SRZ/Ji+QrG8DenyHJnlwiNNSZ/zCdX0u\nNnHdRta3ZUhiXh66bO2tadcGmhdr0r7nb9QHL4CPHlzDD+CHz1zYOAUrjGb2u4QR\nlH4u65MKLgTUXkEAO8pyDtDpfkjTJr3EhzQm6By0P8Jq90vXbfHfFgY0RYHG9OZK\nDJ+i7b8WhwKBgHaZ90O5+CTjA28WlWi14YFeuztYTJVSjTKBlsFj979BojrB7/Nc\nI4U29AGJY/UxbdQQihnAXz9TuQcTlS3hDPEJNQH8puagG3t679xFfEQPxsTuF/eW\npSzi8rPBH6ZPw8NY5wS8qYP1s0cfJpay4/urKZGDZbDOFigsFRvfBB1lAoGAd2Kn\nyLKOmTh2ljodMzZCbwaJf2Rawy6vkXT7T5eIU5wqI/1lThXVsT18eVnoY+/fcplI\n8BEvmZu1G3U0rEC/wbC0HbSDTT4tCFKgMJQAtxxUT2GrapgY1iLRlA11Z3UhDtK9\nN8PdboGqWy442TrTy+GnltgdKlSwv7jX14NOprUCgYEA1a/9yUd6CxrUYE93+FZ4\n8KrZ7y3kMi45kmPDFcw/XuceF0myOUNYUZfV72VVLxEW4DufN5KgZ0lFIqiRf3jf\nLG83KtY7TtY5vyjV4rP5I1QzvhLFASTTtxTkVspVXXlIHtsY480To5FVaG1yWYOa\nUte6xbak1QpLVQt7KbKiFeI=\n-----END PRIVATE KEY-----\n"
+
+# ASL's GCP Credential
+PROJECT_ID = "clus-demo"
+TOKEN_URL = "https://oauth2.googleapis.com/token"
+CLIENT_EMAIL = "939119218150-compute@developer.gserviceaccount.com"
+CLIENT_ID = "118175403033167541826"
+PRIVATE_KEY = "-----BEGIN PRIVATE KEY-----\nMIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDKUggV/xJdXXcX\nCzYJbsasUmehUAiEH5hE6DiL7/CvKmy/b6L3/8CIa5SpdHL6MVnifSC0Hxe59mWi\nIvejk7/611lf0VPH21mO0JWc1QHKq7ow7J7K58z69d9GyYGD3f/3IXrdOvD34tva\nMagdQU6FGmBJse5B7fVRpan+GGXxdSylIgquVZVbRPfLPJEmyO2sLkkzwlfl1oSm\ne7mnlD7L8aFdi5MaEC0UJVdYNG98rq3qad9RcjPHF/+RFIgZTOE9tRzDymKTYRjs\n8f71zVu9fA9+f++p1KqydIHpfsZRVZ43mlLApKUEqZv3Kgn/be6voPlyCPgGZ+QZ\nJwj+HtmPAgMBAAECggEAE+PqrZbtDEbDDX3pqxW77HcRfxdqLusYQjX+USueount\n1Qg5ol3/ZKoG7H3pS9WMO6sHiw2/fGXP6he79tXwus1vGO9waCaVcGfrPYbnbTBi\n1qp8lgAh8842TDRFSlyJ7JbbCGLiC8y+xn25RF8GRCmqq7QVc1/cjVFXHAb0Br/M\nekJxt84iwpGV2X54SCQl2eNn5cSj10b0xd9qGRFPiBQh0o4AQXZY22tiqaxi42LE\nXv8E6e6O0+o7EyWqcr/I83b7V3etIjeerhKNc/v7OKJccBhC+MYL03cBUpIJnQBw\n1k7ndCB2YIbKWNTmaDbQHxcUL9KXfg0rYx80gNWcsQKBgQDwTzBk8fRPESjYb7lI\n5iO83qJPffgjSQFQtNjIyzzmWqrzkL/TyNEM+ePdvFgEA4qZQTDg3SaBoFm4GKHX\n5rPmpC1iwUHJfCfLAWF//2Nj94wo3kcw8L3oMC/t89a3t+Ig9JjFx4zyO6RTmaoT\naouclXcHz07YSgBEANzn2EczpwKBgQDXh9oL/7GNdo6yKvxv6+rXzKmVxkwl6ilQ\n1ixrGaIPPR62Hdu6QLvBWTkWjVEX7HW95LorbxyVAhtp8Zq3LJavsWmTsHvwY3EN\nzaLfGF5RYvBf89T5Ao35jv050np51lwXyyRJbPUcUQ9XFNuoV7nmHJRgsYQ7ww27\nVxV/gyGH2QKBgQCnePioEPsLM1E87Te6dzDGyn1hWs/Yf2NcRHykCwepHdzvm5wk\nU1plaa2E9WJ9gZ5Qyd7vhw/z3LVKGFiKJ2yOuzIqFbbsXQs6bf7t/iTdIULbpHUG\nxXAD5bkxYvLr3EnKX8wsYbJ3ilsuK/QcTe94M63dkntHPuNKgTNynAabFwKBgQCw\ncCQOAonFNrLmI853iPe9JWwGkkiwGRstc8b0/gzu0Kgdih/gPzH0vCfB0Hn8TbSt\neVr2R4Vsbkcm2YRAQ54vwdqd7rHnPmDEXfzhCT/c/FOvGRrVpkO3cljWRvnAV70Y\nNVJFUY7uWWVncknHa9lhCTBmX6vSiIDrRgTxV9XRMQKBgQCdpnfJXJrp3ksWgIKH\nJuz5OrOlWtERHXGrYFrnKJvfo+Gy/kOgtZMEXikpySBh0kD6Q7CmlulsQb/EHo/d\nSiBrXf30AoXpxmgDxmbeR+Y2gCrdPQA9z2HDy1qCLuOGfNijGWc8/USWSHW/Bvn9\ndbKF+Q62hCQ/UxmbZs7CZ18WAA==\n-----END PRIVATE KEY-----\n"
+
+
+# Jay's SFTP 
+# HOST= "dnt4.files.com"
+# PORT= 22
+# USER= "jay.dnt@yopmail.com"
+# PASSWORD= "Jay@28101998"
+# SECURE= true
+
+# ASL SFTP 
+HOST= "34.88.92.73"
+PORT= 22
+USER= "user7"
+PASSWORD= "User7@123"
+SECURE= true

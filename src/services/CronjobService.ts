@@ -16,6 +16,7 @@ export class CronjobService implements ICronjobService {
   }
 
   async cronJob(): Promise<any> {
+    console.log("This is fron CronJob `````````````````````````````````````````")
     const connectionData: SFTPCreateConnectionService = {
       host: env.SFTP_HOST!,
       port: env.SFTP_PORT!,
@@ -25,7 +26,7 @@ export class CronjobService implements ICronjobService {
     };
     const connectSftp = await this._sftpService.createSFTPConnection(
       connectionData
-    );
+    )
     try {
       const fileArrays: string[] = [];
       const selectedFileType = env.SELECT_FILE_TYPE || "txt";
@@ -47,7 +48,7 @@ export class CronjobService implements ICronjobService {
 
         for (let i = 0; i < files.length; i++) {
           const file = files[i];
-          await this._sftpService.deleteFiles(file);
+          // await this._sftpService.deleteFiles(file);
         }
       }
 

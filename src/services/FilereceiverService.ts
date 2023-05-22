@@ -14,7 +14,7 @@ export class FilereceiverService implements IFilereceiverService {
     console.log(`Creating: ${this.constructor.name}`);
   }
 
-  async fileManager(files: string[]): Promise<any> {
+  async fileManager(files: string[], id: number): Promise<any> {
     try {
       for (let i = 0; i < files.length; i++) {
         const parentFolderName = files[i].split("/")[0];
@@ -33,7 +33,8 @@ export class FilereceiverService implements IFilereceiverService {
         //This function will upload the files to bucket
         await this._gcpService.uploadFileOnBucket(
           `${__dirname}/sftp-files/${fileName}`,
-          `${destinationFolder}${fileName}`
+          `${destinationFolder}${fileName}`,
+          id
         );
         // const upload = await gcs.upload(`${__dirname}/sftp-files/${fileName}`, {
         //   destination: `${destinationFolder}${fileName}`,
@@ -48,7 +49,7 @@ export class FilereceiverService implements IFilereceiverService {
         };
         const sendMessage = await this._gcpService.sendMessageTOPubSub(
           payload,
-          "ge-queue"
+          "ge-queue", id
         );
         console.log("Message Sent ", sendMessage);
       }

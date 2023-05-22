@@ -14,7 +14,7 @@ export default class FilereceiverController extends BaseController {
     try {
       const files = req.body.downloadedFiles;
 
-      const fileManager = await this._filereceiverService.fileManager(files);
+      const fileManager = await this._filereceiverService.fileManager(files, 1);
 
       // Return response
       return this.sendJSONResponse(

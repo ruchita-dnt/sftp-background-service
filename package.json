@@ -36,6 +36,7 @@
     "body-parser": "^1.18.2",
     "cors": "^2.8.4",
     "crypto-js": "^3.1.9-1",
+    "db-sdk": "file:db-sdk-1.0.15.tgz",
     "dotenv": "^16.0.3",
     "ejs": "^3.0.1",
     "errorhandler": "^1.5.0",
@@ -51,7 +52,6 @@
     "reflect-metadata": "^0.1.13",
     "ssh2-sftp-client": "^9.1.0",
     "typedi": "^0.8.0",
-    "winston": "^3.8.2",
-    "db-sdk": "file:db-sdk-1.0.4.tgz"
+    "winston": "^3.8.2"
   }
 }

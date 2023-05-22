@@ -5,8 +5,14 @@ import { SFTPCreateConnectionService } from "../types/SFTPService";
 import { join } from "path";
 const Client = require("ssh2-sftp-client");
 const sftp = new Client();
-import { Database } from "db-sdk";
-import { filemaster } from "db-sdk/src/FileMaster";
+import { Database } from "db-sdk/dist";
+import { Documents } from "db-sdk/dist/Documents";
+import { DocumentAuditTrail } from "db-sdk/dist/DocumentAuditTrail";
+import { DocumentTypes } from "db-sdk/dist/DocumentTypes";
+import { FileStatusEnum } from "db-sdk/dist/Enum";
+import { Operations } from "db-sdk/dist/Operations";
+import { Projects } from "db-sdk/dist/Projects";
+
 
 @injectable()
 export class SFTPService implements ISFTPService {
@@ -32,8 +38,17 @@ export class SFTPService implements ISFTPService {
     filesArray: string[],
     selectedFileType: string
   ): Promise<string[]> {
+
+    const database = new Database();
+    let connection;
+    if (typeof connection === "undefined") {
+      // Connect to the MySQL database from layer
+      connection = await database.createDBconnection();
+    }
+
     try {
       const files = await sftp.list(path);
+      console.log('file list -- to check if the connection was successfull ~~~~~~~~~~~~~~~~~~~~~~~', files)
 
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
@@ -66,17 +81,65 @@ export class SFTPService implements ISFTPService {
              * 
              * file_process_details: fileId, status, description, time, createdAt
              */
-            const database = new Database();
-            let connection;
-            if (typeof connection === "undefined") {
-              // Connect to the MySQL database from layer
-              connection = await database.createDBconnection();
-            }
-            const fileMasterRepo = await database.getEntity(filemaster);
-            const fileProcessDetailsRepo = await database.getEntity("fileprocessdetails");
-            const newFileMaster = new filemaster();
-            newFileMaster.operationId = 1;
-            database.saveEntity(fileMasterRepo, newFileMaster);
+            const OperationsRepo:any = await database.getEntity(Operations); 
+            let OperationId = await OperationsRepo.findOne({
+              where: {
+                operationName: "Belgium",
+            },
+              // operationName: "Belgium",
+          });
+
+          const ProjectsRepo:any = await database.getEntity(Projects); 
+            let ProjectId = await ProjectsRepo.findOne({
+              where: {
+                name: "GE",
+            },
+              // name: "GE",
+          });
+
+          const DocumentTypeRepo:any = await database.getEntity(DocumentTypes); 
+          let FileTypeId = await DocumentTypeRepo.findOne({
+            where: {
+              documentType: "QAR",
+          },
+            
+            
+        })
+
+
+
+            
+            const DocumentsRepo = await database.getEntity(Documents);           
+
+            const newDocument = new Documents();
+            newDocument.operationId = OperationId.id;
+            newDocument.projectId = ProjectId.id;
+            newDocument.documentTypeId = FileTypeId.id;
+            newDocument.tailNo = removePath;  //
+            newDocument.flightNo="100ASL";  // where can i get it
+            newDocument.documentName=file.name; //filename
+            newDocument.sourcePath=`${removePath}/${file.name}`;
+            newDocument.stagingAreaPath=`${__dirname}/sftp-files/${file.name}`; //bucket location
+            newDocument.processStartTime=new Date();
+            newDocument.processEndTime=new Date()
+            // newDocument.createdAt=new Date()
+            // newDocument.updatedAt=new Date()
+            newDocument.status = FileStatusEnum.PICKUP_BY_SFTP;
+
+            const DocumentScave =await database.saveEntity(DocumentsRepo, newDocument);
+
+            console.log(DocumentScave,"this is saved DocumentScave`````");
+
+            const DocumentAuditTrailRepo = await database.getEntity(DocumentAuditTrail);
+            const newDocumentAuditTrail = await new DocumentAuditTrail;
+
+            newDocumentAuditTrail.documentId = DocumentScave.id;
+            newDocumentAuditTrail.description="trying to win a little everyday";
+            newDocumentAuditTrail.time=new Date()
+            newDocumentAuditTrail.createdAt=new Date()
+            newDocumentAuditTrail.status = FileStatusEnum.PICKUP_BY_SFTP;
+            
+            const fileProcessDetails =await database.saveEntity(DocumentAuditTrailRepo, newDocumentAuditTrail);
           }
         }
       }
@@ -87,6 +150,9 @@ export class SFTPService implements ISFTPService {
         "An error occurred while interacting with the downloadFiles service." +
           error
       );
+    } finally{
+      // connection = await database.Disconnect();
+      console.log('Disconnected');
     }
   }
 
