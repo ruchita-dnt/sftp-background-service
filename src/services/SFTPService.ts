@@ -140,7 +140,8 @@ export class SFTPService implements ISFTPService {
                   );
 
                   console.log(new Date().toLocaleString(), "File Read End");
-
+                  console.log("DocumentScave", DocumentScave);
+                  console.log("id", DocumentScave.id);
                   const formData = new FormData();
                   formData.append("id", DocumentScave.id);
                   formData.append("tailNumber", tailNumber);
