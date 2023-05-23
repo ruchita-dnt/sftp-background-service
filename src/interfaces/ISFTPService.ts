@@ -8,7 +8,8 @@ export interface ISFTPService {
   downloadFiles(
     path: string,
     filesArray: string[],
-    selectedFileType: string
+    selectedFileType: string,
+    allPromise: any[]
   ): Promise<string[]>;
 
   deleteFiles(path: string): Promise<any>;
