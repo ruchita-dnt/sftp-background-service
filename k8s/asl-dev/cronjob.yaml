@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: cronv2
+  name: ftp-adapter
   namespace: dev
 spec:
   jobTemplate:
@@ -10,11 +10,11 @@ spec:
       template:
         metadata:
           labels:
-            app: cronv2
+            app: ftp-adapter
         spec:
           containers:
-            - name: cronv2
-              image: gcr.io/clus-demo/docker-image:latest
+            - name: ftp-adapter-container
+              image: gcr.io/clus-demo/ftp-adapter-image
               imagePullPolicy: IfNotPresent
               command:
                 - npm
@@ -71,6 +71,51 @@ spec:
                     secretKeyRef:
                       name: sftp-service-secret
                       key: ftpServerPath
+                - name: HOST
+                  valueFrom:
+                    secretKeyRef:
+                      name: sftp-service-secret
+                      key: HOST
+                - name: PORT
+                  valueFrom:
+                    secretKeyRef:
+                      name: sftp-service-secret
+                      key: PORT
+                - name: USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: sftp-service-secret
+                      key: USER
+                - name: PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: sftp-service-secret
+                      key: PASSWORD
+                - name: SECURE
+                  valueFrom:
+                    secretKeyRef:
+                      name: sftp-service-secret
+                      key: SECURE
+                - name: API_PORT
+                  valueFrom:
+                    secretKeyRef:
+                      name: sftp-service-secret
+                      key: API_PORT
+                - name: API_ROOT
+                  valueFrom:
+                    secretKeyRef:
+                      name: sftp-service-secret
+                      key: API_ROOT
+                - name: API_VERSION
+                  valueFrom:
+                    secretKeyRef:
+                      name: sftp-service-secret
+                      key: API_VERSION
+                - name: API_HOST
+                  valueFrom:
+                    secretKeyRef:
+                      name: sftp-service-secret
+                      key: API_HOST
           restartPolicy: OnFailure
   schedule: "0 */12 * * *"
   successfulJobsHistoryLimit: 3
